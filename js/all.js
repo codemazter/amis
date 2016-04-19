@@ -12,16 +12,18 @@ $(window).load(function() {
     $.mobile.phonegapNavigationEnabled = true;
     $.mobile.changePage.defaults.allowSamePageTransition = true;
     $.mobile.allowCrossDomainPages = true;
+    document.addEventListener("deviceready", onDeviceReady, false);
 });
 
-document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady()    {
     _notify();
+    alert('device');
     navigator.splashscreen.hide();
     disableBack = false;
     document.addEventListener("backbutton", onBackKeyDown, false);
 }
 function onBackKeyDown() {
+    alert('key');
     if ($.mobile.activePage == "loginform") {
         navigator.app.exitApp();
     }
