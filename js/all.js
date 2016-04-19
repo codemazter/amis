@@ -1,26 +1,9 @@
-var category;
-var first_name;
-var middle_name;
-var surname;
-var member_code;
-var member_region;
-var member_area;
-var user_id;
-var member_id;
-var profImg_url;
-var region;
-var majlis;
-var latitude;
-var longitude;
-var arr = [];
+var category, first_name, middle_name, surname, member_code, member_region, member_area,
+user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification;
 var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att", "p_att", "budget", "promise", "statement", "statistics", "mail_new", "mail_box", "mc_con", "mc_chq", "mc_mem", "mc_org", "mc_pos", "mc_sms", "tc_create", "tc_draft", "tc_history"];
 //get year
 var fin_df = new Date();
-var cur_yr = fin_df.getFullYear();
-var prv_yr = Number(cur_yr) - 1;
-var nxt_yr = Number(cur_yr) + 1;
-
-
+var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 $(document).ready(function(e) {
 
     //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
@@ -32,6 +15,9 @@ $(document).ready(function(e) {
     
     $.support.touchOverflow = true;
     $.mobile.touchOverflowEnabled = true;
+    $.mobile.allowCrossDomainPages = true;
+    $.mobile.phonegapNavigationEnabled = true;
+    $.mobile.changePage.defaults.allowSamePageTransition = true;
 
     $(function() {
         FastClick.attach(document.body);
@@ -52,8 +38,11 @@ $(document).ready(function(e) {
                     if (prevPage == "loginform") {
                          navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
                     }else{
-                        $.mobile.changePage("#" + prevPage, {
-                            transition: "none",
+                        $.mobile.changePage("#"+prevPage,{
+                            allowSamePageTransition:true,
+                            reloadPage:false,
+                            changeHash:true,
+                            transition:"none",
                             reverse: true
                         });
                     }
@@ -62,7 +51,10 @@ $(document).ready(function(e) {
                 }
             }
         }, false);
+
+        _notify();
     }, false);
+
     /** Device Ready ends **/
     $('#eventsBtn, #financeBtn, #notifyBtn, #giftBtn').draggable({
         revert: true,
@@ -233,6 +225,57 @@ $(document).ready(function(e) {
 
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
+function _notify() {
+    try { 
+        pushNotification = window.plugins.pushNotification;
+        alert('registering ' + device.platform );
+        //$("#app-status-ul").append('<li>registering ' + device.platform + '</li>');
+        if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) {
+            pushNotification.register(successHandler, errorHandler, {"senderID":"325344179118","ecb":"onNotification"});        // required!
+        } else {
+            pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});    // required!
+        }
+    }catch(err) { 
+        txt="There was an error on this page.\n\n"; 
+        txt+="Error description: " + err.message + "\n\n"; 
+        alert(txt); 
+    } 
+}
+
+// handle APNS notifications for iOS
+function onNotificationAPN(e) {
+    if (e.alert) {
+        //alert('push-notification:'+e.alert); 
+         //$("#app-status-ul").append('<li>push-notification: ' + e.alert + '</li>');
+         // showing an alert also requires the org.apache.cordova.dialogs plugin
+         navigator.notification.alert(e.alert);
+    }
+    if (e.sound) {
+        // playing a sound also requires the org.apache.cordova.media plugin
+        var snd = new Media(e.sound);
+        snd.play();
+    }
+    if (e.badge) {
+        pushNotification.setApplicationIconBadgeNumber(successHandler, e.badge);
+    }
+}
+
+function tokenHandler (result) {
+    alert('Token: '+result); 
+    //$("#app-status-ul").append('<li>token: '+ result +'</li>');
+    // Your iOS push server needs to know the token before it can push to this device
+    // here is where you might want to send it the token for later use.
+}
+
+function successHandler (result) {
+    alert('Success:'+result); 
+    //$("#app-status-ul").append('<li>success:'+ result +'</li>');
+}
+
+function errorHandler (error) {
+    alert('Error: '+error); 
+    //$("#app-status-ul").append('<li>error:'+ error +'</li>');
+}
 
 function in_array(needle, haystack, argStrict) {
   var key = '',
