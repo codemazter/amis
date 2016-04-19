@@ -234,7 +234,7 @@ $(document).ready(function(e) {
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
-    navigator.notification.alert(device.platform+ " is ready");
+    //navigator.notification.alert(device.platform+ " is ready");
     try { 
         pushNotification = window.plugins.pushNotification;
         navigator.notification.alert('registering ' + device.platform );
@@ -252,16 +252,13 @@ function _notify() {
 
 // handle GCM notifications for Android
 function onNotification(e) {
-    navigator.notification.alert(e.event); 
-
-    //$("#app-status-ul").append('<li>EVENT -> RECEIVED:' + e.event + '</li>');
-    
+    //navigator.notification.alert(e.event); 
     switch( e.event )
     {
         case 'registered':
         if ( e.regid.length > 0 )
         {
-            navigator.notification.alert('REGID:'+e.regid);
+            //navigator.notification.alert('REGID:'+e.regid);
             // Your GCM push server needs to know the regID before it can push to this device
             // here is where you might want to send it the regID for later use.
             console.log("regID = " + e.regid);
@@ -334,11 +331,11 @@ function tokenHandler (result) {
 }
 
 function successHandler (result) {
-    navigator.notification.alert('Success:'+result); 
+    //navigator.notification.alert('Success:'+result); 
 }
 
 function errorHandler (error) {
-    navigator.notification.alert('Error: '+error); 
+    navigator.notification.alert('Device registertaion failed: '+error); 
 }
 
 function in_array(needle, haystack, argStrict) {
