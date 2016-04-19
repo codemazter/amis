@@ -1,3 +1,4 @@
+$.support.cors = true;
 var category, first_name, middle_name, surname, member_code, member_region, member_area,
 user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification;
 var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att", "p_att", "budget", "promise", "statement", "statistics", "mail_new", "mail_box", "mc_con", "mc_chq", "mc_mem", "mc_org", "mc_pos", "mc_sms", "tc_create", "tc_draft", "tc_history"];
@@ -5,21 +6,23 @@ var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att",
 var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 
-alert("0");
 $(document).ready(function(e) {
-    alert("1");
+    
     $.support.touchOverflow = true;
     $.mobile.touchOverflowEnabled = true;
-    //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
+    $.mobile.allowCrossDomainPages = true;
+
     login_user = window.localStorage.getItem("stay_signed");
     if (login_user) {
         $('#user_name').val(login_user);
         $('.chksign').prop('checked', true);
     }
+
     $(function() {
         FastClick.attach(document.body);
     });
-    
+    document.addEventListener("deviceready", onDeviceReady,false);
+
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
         //_notify();
@@ -83,142 +86,143 @@ $(document).ready(function(e) {
             }
         }
     });
-
-    /*--login starts---*/
-    $('.loginBtn').click(function(){
-        var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
-        email = $('#user_name').val();
-        pass = $('#user_pass').val();
-        if(email==""){
-            $('.login_err').html('* Please enter a user ID');
-        }else if (!pattern.test(email)) {
-            $('.login_err').html('* Please enter a valid email address');
-        }else if(pass==""){
-            $('.login_err').html('* Please enter a password');
-        }else{
-            $('.login_err').html('');
-            var dataString ="uname="+email+"&pass="+pass;
-            $.ajax({
-                url:"http://amisapp.ansarullah.co.uk/mobile_app/login",
-                type:"POST",
-                data:dataString,
-                dataType:"json",
-                beforeSend:function(){
-                    $('.ajaxOverlay').show();
-                    disableBack = true;
-                },
-                success:function(data){
-                    disableBack = false;
-                    if(data.res==1){
-                        if ($('.chksign').is(":checked")){
-                            window.localStorage.setItem("stay_signed", email);
-                        }else{
-                            window.localStorage.removeItem('stay_signed');
-                        }
-                        //set item
-                        window.localStorage.setItem("member_id", data.det.m_id);
-                        window.localStorage.setItem("user_id", data.det.u_id);
-                        window.localStorage.setItem("first_name", data.det.fname);
-                        window.localStorage.setItem("middle_name", data.det.mid_name);
-                        window.localStorage.setItem("surname", data.det.surname);
-                        window.localStorage.setItem("member_code", data.det.m_code);
-                        window.localStorage.setItem("region", data.det.region);
-                        window.localStorage.setItem("area", data.det.area);
-                        window.localStorage.setItem("prof_img", data.det.prof_img);
-                        window.localStorage.setItem("latitude", data.det.latitude);
-                        window.localStorage.setItem("longitude", data.det.longitude);
-
-                        //get item
-                        user_id = window.localStorage.getItem("user_id");
-                        member_id = window.localStorage.getItem("member_id");
-                        member_code = window.localStorage.getItem("member_code");
-                        first_name = window.localStorage.getItem("first_name");
-                        middle_name = window.localStorage.getItem("middle_name");
-                        surname = window.localStorage.getItem("surname");
-                        member_region = window.localStorage.getItem("region");
-                        member_area = window.localStorage.getItem("area");
-                        profImg_url = window.localStorage.getItem("prof_img");
-                        latitude = window.localStorage.getItem("latitude");
-                        longitude = window.localStorage.getItem("longitude");
-                        var ul_obj = data.det.ula;
-                        
-                        var usr_l = Object.keys(ul_obj).map(function(key){return ul_obj[key]});
-
-                        for (var xy = 0; xy < ula_field.length; xy++) {
-                            if(in_array(ula_field[xy], usr_l)){
-                                $('.'+ula_field[xy]).show();
-                            }else{
-                                $('.'+ula_field[xy]).hide();
-                            }
-                            
-                        }
-                        
-                        $('.profileName h4').html(first_name+' '+surname);
-                        $('.profileImage img').attr("src","http://amisapp.ansarullah.co.uk/images/member/"+profImg_url);
-                        setTimeout(function(){
-                            $('.ajaxOverlay').hide();
-                            $.mobile.changePage("#menuList", {
-                                transition: "none"
-                            });
-                        }, 2000);
-                        
-                        //profile details 
-                        profile_details();
-                        //events list call
-                        events_list();
-                        //message centre list call
-                        message_centre();
-                        //inbox 
-                        email_inbox();
-                        //regions
-                        regions();
-                        //salaat times
-                        tday();
-                        
-                        //finance year
-                        $('#fin_year').html('<option value="">* Year</option><option value="'+prv_yr+'">'+prv_yr+'</option><option value="'+cur_yr+'">'+cur_yr+'</option><option value="'+nxt_yr+'">'+nxt_yr+'</option>');
-                    }else{
-                        setTimeout(function(){$('.ajaxOverlay').hide();$('.login_err').html(data.det);}, 2000);
-                        window.localStorage.clear();
-                    }
-                }
-            });
-        }
-    });
-   /*--login ends---*/
-
-   /*-- compose message--*/
-   $('.compose').click(function(){
-        $('#mail_sub').val('');
-        $('#message').val('');
-        $('#msg_typ').val(0);
-        $('#msg_title').html('Compose');
-   });
-   /*-- compose message ends--*/
-
-   /*-- forward message--*/
-   $('.fwd_msg').click(function(){
-        var msg_sub = $('#fwd_sub').val();
-        var msg_content = $('#fwd_content').val();
-        $('#mail_sub').val('Re: '+msg_sub);
-        $('#message').val(msg_content);
-        $('#msg_typ').val(2);
-        $('#msg_title').html('Forward');
-   });
-   /*-- forward message ends--*/
-
-   /*-- reply message --*/
-   $('.rep_msg').click(function(){
-        var reply_to = $('#reply_addr').val();
-        $('#reply_id').val(reply_to);
-        $('#mail_sub').val('');
-        $('#message').val('');
-         $('#msg_typ').val(1);
-        $('#msg_title').html('Reply');
-   });
-   /*-- reply message ends--*/
-
 });
+
+
+/*--login starts---*/
+$(document).on('click', '.loginBtn', function(){
+    var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
+    email = $('#user_name').val();
+    pass = $('#user_pass').val();
+    if(email==""){
+        $('.login_err').html('* Please enter a user ID');
+    }else if (!pattern.test(email)) {
+        $('.login_err').html('* Please enter a valid email address');
+    }else if(pass==""){
+        $('.login_err').html('* Please enter a password');
+    }else{
+        $('.login_err').html('');
+        var dataString ="uname="+email+"&pass="+pass;
+        $.ajax({
+            url:"http://amisapp.ansarullah.co.uk/mobile_app/login",
+            type:"POST",
+            data:dataString,
+            dataType:"json",
+            beforeSend:function(){
+                $('.ajaxOverlay').show();
+                disableBack = true;
+            },
+            success:function(data){
+                disableBack = false;
+                if(data.res==1){
+                    if ($('.chksign').is(":checked")){
+                        window.localStorage.setItem("stay_signed", email);
+                    }else{
+                        window.localStorage.removeItem('stay_signed');
+                    }
+                    //set item
+                    window.localStorage.setItem("member_id", data.det.m_id);
+                    window.localStorage.setItem("user_id", data.det.u_id);
+                    window.localStorage.setItem("first_name", data.det.fname);
+                    window.localStorage.setItem("middle_name", data.det.mid_name);
+                    window.localStorage.setItem("surname", data.det.surname);
+                    window.localStorage.setItem("member_code", data.det.m_code);
+                    window.localStorage.setItem("region", data.det.region);
+                    window.localStorage.setItem("area", data.det.area);
+                    window.localStorage.setItem("prof_img", data.det.prof_img);
+                    window.localStorage.setItem("latitude", data.det.latitude);
+                    window.localStorage.setItem("longitude", data.det.longitude);
+
+                    //get item
+                    user_id = window.localStorage.getItem("user_id");
+                    member_id = window.localStorage.getItem("member_id");
+                    member_code = window.localStorage.getItem("member_code");
+                    first_name = window.localStorage.getItem("first_name");
+                    middle_name = window.localStorage.getItem("middle_name");
+                    surname = window.localStorage.getItem("surname");
+                    member_region = window.localStorage.getItem("region");
+                    member_area = window.localStorage.getItem("area");
+                    profImg_url = window.localStorage.getItem("prof_img");
+                    latitude = window.localStorage.getItem("latitude");
+                    longitude = window.localStorage.getItem("longitude");
+                    var ul_obj = data.det.ula;
+                    
+                    var usr_l = Object.keys(ul_obj).map(function(key){return ul_obj[key]});
+
+                    for (var xy = 0; xy < ula_field.length; xy++) {
+                        if(in_array(ula_field[xy], usr_l)){
+                            $('.'+ula_field[xy]).show();
+                        }else{
+                            $('.'+ula_field[xy]).hide();
+                        }
+                        
+                    }
+                    
+                    $('.profileName h4').html(first_name+' '+surname);
+                    $('.profileImage img').attr("src","http://amisapp.ansarullah.co.uk/images/member/"+profImg_url);
+                    setTimeout(function(){
+                        $('.ajaxOverlay').hide();
+                        $.mobile.changePage("#menuList", {
+                            transition: "none"
+                        });
+                    }, 2000);
+                    
+                    //profile details 
+                    profile_details();
+                    //events list call
+                    events_list();
+                    //message centre list call
+                    message_centre();
+                    //inbox 
+                    email_inbox();
+                    //regions
+                    regions();
+                    //salaat times
+                    tday();
+                    
+                    //finance year
+                    $('#fin_year').html('<option value="">* Year</option><option value="'+prv_yr+'">'+prv_yr+'</option><option value="'+cur_yr+'">'+cur_yr+'</option><option value="'+nxt_yr+'">'+nxt_yr+'</option>');
+                }else{
+                    setTimeout(function(){$('.ajaxOverlay').hide();$('.login_err').html(data.det);}, 2000);
+                    window.localStorage.clear();
+                }
+            }
+        });
+    }
+});
+/*--login ends---*/
+
+/*-- compose message--*/
+$(document).on('click', '.compose', function(){
+    $('#mail_sub').val('');
+    $('#message').val('');
+    $('#msg_typ').val(0);
+    $('#msg_title').html('Compose');
+});
+/*-- compose message ends--*/
+
+/*-- forward message--*/
+$(document).on('click', '.fwd_msg', function(){
+    var msg_sub = $('#fwd_sub').val();
+    var msg_content = $('#fwd_content').val();
+    $('#mail_sub').val('Re: '+msg_sub);
+    $('#message').val(msg_content);
+    $('#msg_typ').val(2);
+    $('#msg_title').html('Forward');
+});
+/*-- forward message ends--*/
+
+/*-- reply message --*/
+$(document).on('click', '.rep_msg', function(){
+    var reply_to = $('#reply_addr').val();
+    $('#reply_id').val(reply_to);
+    $('#mail_sub').val('');
+    $('#message').val('');
+     $('#msg_typ').val(1);
+    $('#msg_title').html('Reply');
+});
+/*-- reply message ends--*/
+
 
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
@@ -256,7 +260,7 @@ function onNotification(e) {
             // you might want to play a sound to get the user's attention, throw up a dialog, etc.
             if (e.foreground)
             {
-                navigator.notification.alert('INLINE NOTIFICATION');
+                //navigator.notification.alert('INLINE NOTIFICATION');
                 // on Android soundname is outside the payload. 
                 // On Amazon FireOS all custom attributes are contained within payload
                 var soundfile = e.soundname || e.payload.sound;
@@ -267,10 +271,10 @@ function onNotification(e) {
             }
             else
             {   // otherwise we were launched because the user touched a notification in the notification tray.
-                if (e.coldstart)
-                    //navigator.notification.alert('COLDSTART NOTIFICATION');
+                /*if (e.coldstart)
+                    navigator.notification.alert('COLDSTART NOTIFICATION');
                 else
-                    //navigator.notification.alert('BACKGROUND NOTIFICATION');
+                    navigator.notification.alert('BACKGROUND NOTIFICATION');*/
             }
             navigator.notification.alert(e.payload.message);
         break;
