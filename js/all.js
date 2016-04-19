@@ -14,14 +14,14 @@ $(window).load(function() {
     $.mobile.allowCrossDomainPages = true;
 });
 
-document.addEventListener("deviceready", OnDeviceReady, false);
-function OnDeviceReady()    {
+document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady()    {
     _notify();
     navigator.splashscreen.hide();
     disableBack = false;
-    document.addEventListener("backbutton", OnBackButton, false);
+    document.addEventListener("backbutton", onBackKeyDown, false);
 }
-function OnBackButton() {
+function onBackKeyDown() {
     if ($.mobile.activePage == "loginform") {
         navigator.app.exitApp();
     }
