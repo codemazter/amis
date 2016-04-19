@@ -1,4 +1,3 @@
-$.support.cors = true;
 var category, first_name, middle_name, surname, member_code, member_region, member_area,
 user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification;
 var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att", "p_att", "budget", "promise", "statement", "statistics", "mail_new", "mail_box", "mc_con", "mc_chq", "mc_mem", "mc_org", "mc_pos", "mc_sms", "tc_create", "tc_draft", "tc_history"];
@@ -8,9 +7,7 @@ var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(
 
 
 $(document).ready(function(e) {
-
     navigator.notification.alert("1");
-
     $.support.touchOverflow = true;
     $.mobile.touchOverflowEnabled = true;
     //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
