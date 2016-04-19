@@ -98,7 +98,9 @@ $(document).on('click', '.loginBtn', function(){
         $('.login_err').html('* Please enter a password');
     }else{
         $('.login_err').html('');
-        var dataString ="uname="+email+"&pass="+pass;
+        var androidToken = window.localStorage.getItem("androidToken");
+        var iosToken = window.localStorage.getItem("iosToken");
+        var dataString ="uname="+email+"&pass="+pass+"&androidToken="+pass+"&ios="+iosToken;
         $.ajax({
             url:"http://amisapp.ansarullah.co.uk/mobile_app/login",
             type:"POST",
