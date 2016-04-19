@@ -5,34 +5,62 @@ var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att",
 var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 
-document.addEventListener("deviceready", OnDeviceReady, false);
+$.support.touchOverflow = true;
+$.mobile.touchOverflowEnabled = true;
+$.mobile.allowCrossDomainPages = true;
+$.mobile.phonegapNavigationEnabled = true;
+$.mobile.changePage.defaults.allowSamePageTransition = true;
+
+//document.addEventListener("deviceready", OnDeviceReady, false);
 
 function OnDeviceReady()    {
-    navigator.notification.alert(device.platform+ " is ready");
     _notify();
 }
 
-$(document).ready(function(e) {
 
+document.addEventListener("deviceready", function() {
+    _notify();
+    navigator.splashscreen.hide();
+    disableBack = false;
+    document.addEventListener("backbutton", function() {
+        if ($.mobile.activePage == "loginform") {
+            navigator.app.exitApp();
+        }
+        if (disableBack == false) {
+            var prevPage = $.mobile.activePage.attr('data-prev');
+            if (prevPage) {
+                if (prevPage == "loginform") {
+                     navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
+                }else{
+                    $.mobile.changePage("#"+prevPage,{
+                        allowSamePageTransition:true,
+                        reloadPage:false,
+                        changeHash:true,
+                        transition:"none",
+                        reverse: true
+                    });
+                }
+            }else{
+                navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
+            }
+        }
+    }, false);
+}, false);
+
+
+$(document).ready(function(e) {
     //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
     login_user = window.localStorage.getItem("stay_signed");
-     if (login_user) {
+    if (login_user) {
         $('#user_name').val(login_user);
         $('.chksign').prop('checked', true);
-     }
-    
-    $.support.touchOverflow = true;
-    $.mobile.touchOverflowEnabled = true;
-    $.mobile.allowCrossDomainPages = true;
-    $.mobile.phonegapNavigationEnabled = true;
-    $.mobile.changePage.defaults.allowSamePageTransition = true;
-
+    }
     $(function() {
         FastClick.attach(document.body);
     });
     
     //=========================== Device Ready ==================================
-    document.addEventListener("deviceready", function() {
+    /*document.addEventListener("deviceready", function() {
         //_notify();
         navigator.splashscreen.hide();
         disableBack = false;
@@ -59,9 +87,7 @@ $(document).ready(function(e) {
                 }
             }
         }, false);
-
-        
-    }, false);
+    }, false);*/
 
     /** Device Ready ends **/
     $('#eventsBtn, #financeBtn, #notifyBtn, #giftBtn').draggable({
@@ -234,10 +260,8 @@ $(document).ready(function(e) {
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
-    //navigator.notification.alert(device.platform+ " is ready");
     try { 
         pushNotification = window.plugins.pushNotification;
-        navigator.notification.alert('registering ' + device.platform );
         if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) {
             pushNotification.register(successHandler, errorHandler, {"senderID":"325344179118","ecb":"onNotification"});        // required!
         } else {
@@ -252,16 +276,15 @@ function _notify() {
 
 // handle GCM notifications for Android
 function onNotification(e) {
-    //navigator.notification.alert(e.event); 
     switch( e.event )
     {
         case 'registered':
         if ( e.regid.length > 0 )
         {
-            //navigator.notification.alert('REGID:'+e.regid);
             // Your GCM push server needs to know the regID before it can push to this device
             // here is where you might want to send it the regID for later use.
             console.log("regID = " + e.regid);
+            window.localStorage.setItem("regID", e.regid);
         }
         break;
         
@@ -282,20 +305,11 @@ function onNotification(e) {
             else
             {   // otherwise we were launched because the user touched a notification in the notification tray.
                 if (e.coldstart)
-                    navigator.notification.alert('COLDSTART NOTIFICATION');
-                    //$("#app-status-ul").append('<li>--COLDSTART NOTIFICATION--' + '</li>');
+                    //navigator.notification.alert('COLDSTART NOTIFICATION');
                 else
-                    navigator.notification.alert('BACKGROUND NOTIFICATION');
-                    //$("#app-status-ul").append('<li>--BACKGROUND NOTIFICATION--' + '</li>');
+                    //navigator.notification.alert('BACKGROUND NOTIFICATION');
             }
-
-            navigator.notification.alert(e.payload.message +' '+e.payload.msgcnt+' '+e.payload.timeStamp);
-                
-            //$("#app-status-ul").append('<li>MESSAGE -> MSG: ' + e.payload.message + '</li>');
-            //android only
-            //$("#app-status-ul").append('<li>MESSAGE -> MSGCNT: ' + e.payload.msgcnt + '</li>');
-            //amazon-fireos only
-            //$("#app-status-ul").append('<li>MESSAGE -> TIMESTAMP: ' + e.payload.timeStamp + '</li>');
+            navigator.notification.alert(e.payload.message);
         break;
         case 'error':
             navigator.notification.alert('ERROR -> MSG:'+e.msg);
