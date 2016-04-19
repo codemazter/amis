@@ -4,6 +4,13 @@ var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att",
 //get year
 var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
+
+document.addEventListener("deviceready", OnDeviceReady, false);
+
+function OnDeviceReady()    {
+    alert("Device is ready");
+}
+
 $(document).ready(function(e) {
 
     //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
