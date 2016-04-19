@@ -23,9 +23,9 @@ $(document).ready(function(e) {
     });
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
-        _notify();
         navigator.splashscreen.hide();
         disableBack = false;
+         _notify();
         document.addEventListener("backbutton", function() {
             if ($.mobile.activePage == "loginform") {
                 navigator.app.exitApp();
@@ -223,6 +223,7 @@ $(document).on('click', '.rep_msg', function(){
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
+    navigator.notification.alert("register"); 
     try { 
         pushNotification = window.plugins.pushNotification;
         if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) {
@@ -247,6 +248,7 @@ function onNotification(e) {
             // Your GCM push server needs to know the regID before it can push to this device
             // here is where you might want to send it the regID for later use.
             console.log("regID = " + e.regid);
+            navigator.notification.alert(e.regid); 
             window.localStorage.setItem("regID", e.regid);
         }
         break;
