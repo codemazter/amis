@@ -21,8 +21,6 @@ $(document).ready(function(e) {
     $(function() {
         FastClick.attach(document.body);
     });
-    document.addEventListener("deviceready", onDeviceReady,false);
-
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
         //_notify();
