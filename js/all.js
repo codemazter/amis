@@ -1,3 +1,4 @@
+$.support.cors = true;
 var category, first_name, middle_name, surname, member_code, member_region, member_area,
 user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification;
 var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att", "p_att", "budget", "promise", "statement", "statistics", "mail_new", "mail_box", "mc_con", "mc_chq", "mc_mem", "mc_org", "mc_pos", "mc_sms", "tc_create", "tc_draft", "tc_history"];
@@ -5,51 +6,20 @@ var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att",
 var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 
-$.support.touchOverflow = true;
-$.mobile.touchOverflowEnabled = true;
-$.mobile.allowCrossDomainPages = true;
-$.mobile.phonegapNavigationEnabled = true;
-$.mobile.changePage.defaults.allowSamePageTransition = true;
+$(window).load(function() {
+    $.mobile.phonegapNavigationEnabled = true;
+    $.mobile.changePage.defaults.allowSamePageTransition = true;
+    $.mobile.allowCrossDomainPages = true;
+});
 
 //document.addEventListener("deviceready", OnDeviceReady, false);
 
 function OnDeviceReady()    {
     _notify();
 }
-
-
-document.addEventListener("deviceready", function() {
-    _notify();
-    navigator.splashscreen.hide();
-    disableBack = false;
-    document.addEventListener("backbutton", function() {
-        if ($.mobile.activePage == "loginform") {
-            navigator.app.exitApp();
-        }
-        if (disableBack == false) {
-            var prevPage = $.mobile.activePage.attr('data-prev');
-            if (prevPage) {
-                if (prevPage == "loginform") {
-                     navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
-                }else{
-                    $.mobile.changePage("#"+prevPage,{
-                        allowSamePageTransition:true,
-                        reloadPage:false,
-                        changeHash:true,
-                        transition:"none",
-                        reverse: true
-                    });
-                }
-            }else{
-                navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
-            }
-        }
-    }, false);
-}, false);
-
-
 $(document).ready(function(e) {
-    //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
+    $.support.touchOverflow = true;
+    $.mobile.touchOverflowEnabled = true;
     login_user = window.localStorage.getItem("stay_signed");
     if (login_user) {
         $('#user_name').val(login_user);
@@ -60,8 +30,9 @@ $(document).ready(function(e) {
     });
     
     //=========================== Device Ready ==================================
-    /*document.addEventListener("deviceready", function() {
+    document.addEventListener("deviceready", function() {
         //_notify();
+        alert('lol :-)');
         navigator.splashscreen.hide();
         disableBack = false;
         document.addEventListener("backbutton", function() {
@@ -87,7 +58,7 @@ $(document).ready(function(e) {
                 }
             }
         }, false);
-    }, false);*/
+    }, false);
 
     /** Device Ready ends **/
     $('#eventsBtn, #financeBtn, #notifyBtn, #giftBtn').draggable({
