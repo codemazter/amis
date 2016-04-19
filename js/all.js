@@ -7,19 +7,45 @@ var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 
 $(window).load(function() {
+    $.support.touchOverflow = true;
+    $.mobile.touchOverflowEnabled = true;
     $.mobile.phonegapNavigationEnabled = true;
     $.mobile.changePage.defaults.allowSamePageTransition = true;
     $.mobile.allowCrossDomainPages = true;
 });
 
-//document.addEventListener("deviceready", OnDeviceReady, false);
-
+document.addEventListener("deviceready", OnDeviceReady, false);
 function OnDeviceReady()    {
     _notify();
+    navigator.splashscreen.hide();
+    disableBack = false;
+    document.addEventListener("backbutton", OnBackButton, false);
 }
+function OnBackButton() {
+    if ($.mobile.activePage == "loginform") {
+        navigator.app.exitApp();
+    }
+    if (disableBack == false) {
+        var prevPage = $.mobile.activePage.attr('data-prev');
+        if (prevPage) {
+            if (prevPage == "loginform") {
+                 navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
+            }else{
+                $.mobile.changePage("#"+prevPage,{
+                    allowSamePageTransition:true,
+                    reloadPage:false,
+                    changeHash:true,
+                    transition:"none",
+                    reverse: true
+                });
+            }
+        }else{
+            navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
+        }
+    }
+}
+
 $(document).ready(function(e) {
-    $.support.touchOverflow = true;
-    $.mobile.touchOverflowEnabled = true;
     login_user = window.localStorage.getItem("stay_signed");
     if (login_user) {
         $('#user_name').val(login_user);
@@ -28,38 +54,6 @@ $(document).ready(function(e) {
     $(function() {
         FastClick.attach(document.body);
     });
-    
-    //=========================== Device Ready ==================================
-    document.addEventListener("deviceready", function() {
-        //_notify();
-        alert('lol :-)');
-        navigator.splashscreen.hide();
-        disableBack = false;
-        document.addEventListener("backbutton", function() {
-            if ($.mobile.activePage == "loginform") {
-                navigator.app.exitApp();
-            }
-            if (disableBack == false) {
-                var prevPage = $.mobile.activePage.attr('data-prev');
-                if (prevPage) {
-                    if (prevPage == "loginform") {
-                         navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
-                    }else{
-                        $.mobile.changePage("#"+prevPage,{
-                            allowSamePageTransition:true,
-                            reloadPage:false,
-                            changeHash:true,
-                            transition:"none",
-                            reverse: true
-                        });
-                    }
-                }else{
-                    navigator.notification.confirm("Do you wan't to exit from AMIS?",onConfirm,'Exit','Ok,Cancel');
-                }
-            }
-        }, false);
-    }, false);
-
     /** Device Ready ends **/
     $('#eventsBtn, #financeBtn, #notifyBtn, #giftBtn').draggable({
         revert: true,
