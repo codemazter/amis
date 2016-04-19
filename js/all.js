@@ -8,7 +8,7 @@ var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(
 document.addEventListener("deviceready", OnDeviceReady, false);
 
 function OnDeviceReady()    {
-    navigator.notification.alert(device.platform+ "is ready");
+    alert(device.platform+ "is ready");
     _notify();
 }
 
@@ -33,7 +33,7 @@ $(document).ready(function(e) {
     
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
-        _notify();
+        //_notify();
         navigator.splashscreen.hide();
         disableBack = false;
         document.addEventListener("backbutton", function() {
@@ -234,7 +234,7 @@ $(document).ready(function(e) {
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
-    navigator.notification.alert('start ' + device.platform);
+    alert('start ' + device.platform);
     try { 
         pushNotification = window.plugins.pushNotification;
         alert('registering ' + device.platform );
