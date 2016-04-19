@@ -9,6 +9,7 @@ document.addEventListener("deviceready", OnDeviceReady, false);
 
 function OnDeviceReady()    {
     alert("Device is ready");
+    _notify();
 }
 
 $(document).ready(function(e) {
