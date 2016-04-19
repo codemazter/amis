@@ -25,7 +25,7 @@ $(document).ready(function(e) {
     
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
-        
+        _notify();
         navigator.splashscreen.hide();
         disableBack = false;
         document.addEventListener("backbutton", function() {
@@ -52,7 +52,7 @@ $(document).ready(function(e) {
             }
         }, false);
 
-        _notify();
+        
     }, false);
 
     /** Device Ready ends **/
@@ -226,6 +226,7 @@ $(document).ready(function(e) {
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
+    alert('start ' + device.platform );
     try { 
         pushNotification = window.plugins.pushNotification;
         alert('registering ' + device.platform );
