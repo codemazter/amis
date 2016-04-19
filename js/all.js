@@ -23,12 +23,10 @@ $(document).ready(function(e) {
     });
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
-        //_notify();
-        navigator.notification.alert("2");
+        _notify();
         navigator.splashscreen.hide();
         disableBack = false;
         document.addEventListener("backbutton", function() {
-            navigator.notification.alert("3");
             if ($.mobile.activePage == "loginform") {
                 navigator.app.exitApp();
             }
