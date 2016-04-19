@@ -223,7 +223,6 @@ $(document).on('click', '.rep_msg', function(){
 $("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
-    navigator.notification.alert("register"); 
     try { 
         pushNotification = window.plugins.pushNotification;
         if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) {
@@ -247,9 +246,7 @@ function onNotification(e) {
         {
             // Your GCM push server needs to know the regID before it can push to this device
             // here is where you might want to send it the regID for later use.
-            console.log("regID = " + e.regid);
-            navigator.notification.alert(e.regid); 
-            window.localStorage.setItem("regID", e.regid);
+            window.localStorage.setItem("androidToken", e.regid);
         }
         break;
         
@@ -258,7 +255,6 @@ function onNotification(e) {
             // you might want to play a sound to get the user's attention, throw up a dialog, etc.
             if (e.foreground)
             {
-                //navigator.notification.alert('INLINE NOTIFICATION');
                 // on Android soundname is outside the payload. 
                 // On Amazon FireOS all custom attributes are contained within payload
                 var soundfile = e.soundname || e.payload.sound;
@@ -304,7 +300,8 @@ function onNotificationAPN(e) {
 }
 
 function tokenHandler (result) {
-    navigator.notification.alert('Token: '+result); 
+    window.localStorage.setItem("iosToken", result);
+    //navigator.notification.alert('Token: '+result); 
     // Your iOS push server needs to know the token before it can push to this device
     // here is where you might want to send it the token for later use.
 }
