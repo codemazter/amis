@@ -5,9 +5,9 @@ var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att",
 var fin_df = new Date();
 var cur_yr = fin_df.getFullYear(), prv_yr = Number(cur_yr) - 1, nxt_yr = Number(cur_yr) + 1;
 
-
+alert("0");
 $(document).ready(function(e) {
-    navigator.notification.alert("1");
+    alert("1");
     $.support.touchOverflow = true;
     $.mobile.touchOverflowEnabled = true;
     //=========================== fast Click http://amisapp.ansarullah.co.uk/ ==================================
