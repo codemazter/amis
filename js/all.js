@@ -105,7 +105,7 @@ $(document).on('click', '.loginBtn', function(){
         $('.login_err').html('');
         androidToken = window.localStorage.getItem("androidToken");
         iosToken = window.localStorage.getItem("iosToken");
-        var dataString ="uname="+email+"&pass="+pass+"&androidToken="+pass+"&ios="+iosToken;
+        var dataString ="uname="+email+"&pass="+pass+"&android="+androidToken+"&ios="+iosToken;
         $.ajax({
             url:"http://amisapp.ansarullah.co.uk/mobile_app/login",
             type:"POST",
