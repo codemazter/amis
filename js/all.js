@@ -1,6 +1,7 @@
 $.support.cors = true;
 var category, first_name, middle_name, surname, member_code, member_region, member_area,
-user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification;
+user_id, member_id, profImg_url, region, majlis, latitude, longitude, arr = [], pushNotification, androidToken,
+ iosToken;
 var ula_field = ["s_time", "e_all", "e_nat", "e_reg", "e_maj", "e_inv", "a_att", "p_att", "budget", "promise", "statement", "statistics", "mail_new", "mail_box", "mc_con", "mc_chq", "mc_mem", "mc_org", "mc_pos", "mc_sms", "tc_create", "tc_draft", "tc_history"];
 //get year
 var fin_df = new Date();
@@ -13,6 +14,10 @@ $(document).ready(function(e) {
     $.mobile.allowCrossDomainPages = true;
 
     login_user = window.localStorage.getItem("stay_signed");
+
+    androidToken = window.localStorage.getItem("androidToken");
+    iosToken = window.localStorage.getItem("iosToken");
+
     if (login_user) {
         $('#user_name').val(login_user);
         $('.chksign').prop('checked', true);
@@ -98,8 +103,8 @@ $(document).on('click', '.loginBtn', function(){
         $('.login_err').html('* Please enter a password');
     }else{
         $('.login_err').html('');
-        var androidToken = window.localStorage.getItem("androidToken");
-        var iosToken = window.localStorage.getItem("iosToken");
+        androidToken = window.localStorage.getItem("androidToken");
+        iosToken = window.localStorage.getItem("iosToken");
         var dataString ="uname="+email+"&pass="+pass+"&androidToken="+pass+"&ios="+iosToken;
         $.ajax({
             url:"http://amisapp.ansarullah.co.uk/mobile_app/login",
@@ -228,9 +233,14 @@ function _notify() {
     try { 
         pushNotification = window.plugins.pushNotification;
         if (device.platform == 'android' || device.platform == 'Android' || device.platform == 'amazon-fireos' ) {
-            pushNotification.register(successHandler, errorHandler, {"senderID":"325344179118","ecb":"onNotification"});        // required!
+            if(!androidToken){
+                pushNotification.register(successHandler, errorHandler, {"senderID":"325344179118","ecb":"onNotification"});        // required!
+            }
+
         } else {
-            pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});    // required!
+            if(!iosToken){
+                pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});    // required!
+            }
         }
     }catch(err) { 
         txt="There was an error on this page.\n\n"; 
