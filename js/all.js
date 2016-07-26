@@ -23,9 +23,8 @@ $(document).ready(function(e) {
         $('.chksign').prop('checked', true);
     }
 
-    $(function() {
-        FastClick.attach(document.body);
-    });
+    $(function() {FastClick.attach(document.body);});
+
     //=========================== Device Ready ==================================
     document.addEventListener("deviceready", function() {
         navigator.splashscreen.hide();
@@ -227,7 +226,7 @@ $(document).on('click', '.rep_msg', function(){
 /*-- reply message ends--*/
 
 
-$("#con_cr").live("pageshow", function() { $.mobile.silentScroll(0); });
+$("#con_cr").on("pageshow", function() { $.mobile.silentScroll(0); });
 
 function _notify() {
     try { 
@@ -402,6 +401,7 @@ function events_list() {
             $('#list_regional').after(data.reg);
             $('#list_local').after(data.maj);
             $('#list_all').after(data.totev);
+            $('#org_list_all').after(data.orgeve);
             $('#list_invites').after(data.invite);
         }
     });
@@ -1274,4 +1274,535 @@ function tday() {
         return this.getTimezoneOffset() < this.stdTimezoneOffset();
     }
 
-    //http://amisapp.ansarullah.co.uk/
+
+$(document).on('click','.org-view-btn',function(){
+    var oe_id = $(this).attr('data-id');
+    var oe_name = $(this).attr('data-n');
+    var oe_tym = $(this).attr('data-t');
+    window.localStorage.setItem("oe_id", oe_id);
+    $('.org-ev-title').html(oe_name);
+    $('.org-ev-tym').html(oe_tym);
+    $.mobile.changePage("#orgView", {transition: "none"});
+});
+
+$(document).on('click','.oc-btn',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_chart_img',
+        type:'POST',
+        data:dataString,
+        dataType:'json',
+        beforeSend:function(){
+            $('.panzoom').attr('src','');
+            $('.tbl_by_lvl').html('');
+            $('.ajaxOverlay').show();
+            disableBack = true;
+        },
+        success:function(res){
+            $('.panzoom').attr('src',res.chart);
+            $('.tbl_by_lvl').html(res.level);
+            setTimeout(function () {
+                $('.ajaxOverlay').hide();
+                disableBack = false;
+                $.mobile.changePage("#org_chart", {
+                    transition: "none"
+                });
+            },2000);     
+        }
+    });
+});
+
+(function() {
+    var $section = $('#inverted-contain');
+    $section.find('.panzoom').panzoom({
+    $zoomIn: $section.find(".zoomInOn"),
+    $zoomOut: $section.find(".zoomOutOff"),
+    $reset: $section.find(".reset"),
+    startTransform: 'scale(1.1)',
+    increment: 0.1,
+    minScale: 1,
+    contain: 'invert'
+    }).panzoom('zoom');
+})();
+
+$(document).on('click','.oc-docs',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_docs_path',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+        },
+        success:function(res){
+            if(res==""){
+                $('.ajaxOverlay').hide();
+                disableBack = false;
+                navigator.notification.alert('There is no documents', null, 'Error!', 'OK'); 
+            }else{
+                downloadFile(res);
+            }
+        }
+    });
+});
+
+$(document).on('click','.oc-meetings',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_meetings',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#meetings_list_all').nextAll().remove();
+        },
+        success:function(res){
+            $('#meetings_list_all').after(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#meetings-list", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.meetings_view',function(){
+    var m_id = $(this).attr('data-id');
+    var dataString = "meetings_id="+m_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/meetings_view',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#details_meetings').html('');
+        },
+        success:function(res){
+            $('#details_meetings').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#meetings_details", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.oc-task',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id+"&asigned_to="+user_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_tasks',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#task_list_all').nextAll().remove();
+        },
+        success:function(res){
+            $('#task_list_all').after(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#task-list", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.task_view',function(){
+    var m_id = $(this).attr('data-id');
+    var dataString = "task_id="+m_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/task_view',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#details_task').html('');
+        },
+        success:function(res){
+            $('#details_task').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#task_details", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.oc-finance',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_financial',
+        type:'POST',
+        data:dataString,
+        dataType:'json',
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#financial_list_int').nextAll().remove();
+            $('#financial_list_ext').nextAll().remove();
+        },
+        success:function(res){
+            $('#financial_list_int').after(res.int);
+            $('#financial_list_ext').after(res.ext);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#financial-list", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.financial_internal',function(){
+    var m_id = $(this).attr('data-id');
+    var dataString = "int_id="+m_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/financial_internal',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#details_financial').html('');
+        },
+        success:function(res){
+            $('#details_financial').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#financial_details", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.financial_external',function(){
+    var m_id = $(this).attr('data-id');
+    var dataString = "ext_id="+m_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/financial_external',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#details_financial').html('');
+        },
+        success:function(res){
+            $('#details_financial').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#financial_details", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+
+$(document).on('click','.oc-reports',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/get_opt_meeting',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('#opt_meeting').html('');
+        },
+        success:function(res){
+            $('#opt_meeting').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#event_reports", {
+                    transition: "none"
+                });
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.report_btn',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var meeting_id = $('#opt_meeting').val();
+    var rpt_type = $(this).attr('data-typ');
+    var dataString = "event_id="+event_id+"&meeting_id="+meeting_id+"&rpt_type="+rpt_type;
+    if(meeting_id!=""){
+        $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/meeting_report_pdf',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+        },
+        success:function(res){
+            $('.ajaxOverlay').hide();
+            if(res==""){
+                disableBack = false;
+                navigator.notification.alert('There is no reports', null, 'Error!', 'OK'); 
+            }else{
+                downloadFile(res);
+            }
+        }
+    });
+    }else{
+        navigator.notification.alert('Please select the meeting', null, 'Error!', 'OK');
+    }
+});  
+
+$(document).on('click','.action_point',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id+"&mem_id="+user_id+"&ap_sts=1";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/my_action_points',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.my_ap_tbl').html('');
+        },
+        success:function(res){
+            $('.my_ap_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#my_ap",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.my_team_ap',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    //user_id
+    var dataString = "event_id="+event_id+"&mem_id="+user_id+"&ap_sts=1";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/ap_team_all',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.my_team_ap_tbl').html('');
+        },
+        success:function(res){
+            $('.my_team_ap_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#my_team_ap",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.all_ap',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id+"&mem_id=0&ap_sts=1";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/ap_team_all',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.all_ap_tbl').html('');
+        },
+        success:function(res){
+            $('.all_ap_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#all_ap",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+
+$(document).on('click','.ap-task',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id+"&mem_id="+user_id+"&ap_sts=2";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/my_action_points',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.my_task_tbl').html('');
+        },
+        success:function(res){
+            $('.my_task_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#my_task",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.my_team_task',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    //user_id
+    var dataString = "event_id="+event_id+"&mem_id="+user_id+"&ap_sts=2";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/ap_team_all',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.my_team_task_tbl').html('');
+        },
+        success:function(res){
+            $('.my_team_task_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#my_team_task",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.all_task',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id+"&mem_id=0&ap_sts=2";
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/ap_team_all',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.all_task_tbl').html('');
+        },
+        success:function(res){
+            $('.all_task_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#all_task",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+$(document).on('click','.red-book',function(){
+    var event_id = window.localStorage.getItem("oe_id");
+    var dataString = "event_id="+event_id;
+    $.ajax({
+        url:'http://amisapp.ansarullah.co.uk/mobile_app/events_red_books',
+        type:'POST',
+        data:dataString,
+        beforeSend:function(){
+            $('.ajaxOverlay').show();
+            disableBack = true;
+            $('.red_book_tbl').html('');
+        },
+        success:function(res){
+            $('.red_book_tbl').html(res);
+            setTimeout(function(){
+                disableBack = false;
+                $('.ajaxOverlay').hide();
+                $.mobile.changePage("#red_book",{transition: "none"});
+            }, 2000);
+        }
+    });
+});
+
+var folderName = 'event documents';
+var fileName;
+
+function downloadFile(URL) {
+    //step to request a file system 
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, fileSystemSuccess, fileSystemFail);
+
+    function fileSystemSuccess(fileSystem) {
+        var download_link = encodeURI(URL);
+        fileName = download_link.substr(download_link.lastIndexOf('/') + 1); //Get filename of URL
+        var directoryEntry = fileSystem.root; // to get root path of directory
+        directoryEntry.getDirectory(folderName, {
+            create: true,
+            exclusive: false
+        }, onDirectorySuccess, onDirectoryFail); // creating folder in sdcard
+        var rootdir = fileSystem.root;
+        var fp = fileSystem.root.toURL(); // Returns Fullpath of local directory
+        fp = fp + "/" + folderName + "/" + fileName; // fullpath and name of the file which we want to give
+        // download function call
+        filetransfer(download_link, fp);
+    }
+    function onDirectorySuccess(parent) {
+        // Directory created successfuly
+    }
+    function onDirectoryFail(error) {
+        //Error while creating directory
+        $('.ajaxOverlay').hide();
+        disableBack = false;
+        //alert("Unable to create new directory: " + error.code);
+        navigator.notification.alert("Unable to create new directory: " + error.code, null, 'Error!', 'OK');
+
+    }
+    function fileSystemFail(evt) {
+        //Unable to access file system
+        $('.ajaxOverlay').hide();
+        disableBack = false;
+        //alert(evt.target.error.code);
+        navigator.notification.alert(evt.target.error.code, null, 'Error!', 'OK');
+    }
+}
+
+function filetransfer(download_link, fp) {
+    var fileTransfer = new FileTransfer();
+    // File download function with URL and local path
+    fileTransfer.download(download_link, fp,
+        function(entry) {
+            $('.ajaxOverlay').hide();
+            disableBack = false;
+            //alert("download complete: " + entry.fullPath);
+            navigator.notification.alert("Download complete: " + entry.fullPath, null, 'Success!', 'OK');
+        },
+        function(error) {
+            //Download abort errors or download failed errors
+            $('.ajaxOverlay').hide();
+            disableBack = false;
+            //alert("download error source " + error.source);
+            navigator.notification.alert("Download error source " + error.source, null, 'Error!', 'OK');
+        }
+    );
+}
